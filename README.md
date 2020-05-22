@@ -9,7 +9,7 @@
 
 ### 1. Working wwith SVGs
 
-<img src="images/svg.png" >
+<img src="/images/svg.PNG" >
 
 #### topics covered:
 - circles, rects, elipses, line, polylines
