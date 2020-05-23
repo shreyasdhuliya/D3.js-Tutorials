@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type = "text/javascript" src = "https://d3js.org/d3.v4.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="scales.css">
+<style>
+
+    
+</style>
+
+
+    </head>
+    <body>
+        <!------------------chart 1 ---------------------------------->
+        <div id="chart1" class="chart"></div>
+        <script>
+            var data=[10,20,30,40,50];
+        
+            var el = d3.select('#chart1')
+            .selectAll('div')
+            .data(data)
+            .enter()
+            .append('div')
+            //.classed('bar',true)
+            .attr('class','barchart1')
+            .style('height', (d) => {
+                return (d*4 + 'px');
+            })
+            console.log(el);
+        </script>
+
+        <!------------------chart 2  RAndom DAta---------------------------------->
+        <div id = "chart2" class="chart"></div>
+        <script>
+            //creating random data
+            var data2=[];
+            for( var i=0; i<20; i++){
+                //var num = Math.floor(Math.random() * 50);
+                var num = d3.randomUniform(1,50)();
+                data2.push(num);
+            }
+
+            //creating bar graph
+            var el = d3.select('#chart2')
+            .selectAll('div')
+            .data(data2)
+            .enter()
+            .append('div')
+            //.classed('bar',true)
+            .attr('class','barchart2')
+            .style('height', (d) => {
+                return (d*4 + 'px');
+            })
+            console.log(el);
+        </script>
+
+        <!------------------chart 3  RAndom DAta centering label---------------------------------->
+        <div id = "chart3" class="chart"></div>
+
+        <script>
+            //creating random data
+            var data3=[];
+            for( var i=0; i<20; i++){
+                //var num = Math.floor(Math.random() * 50);
+                var num = Math.floor(d3.randomUniform(1,50)());
+                data3.push(num);
+            }
+
+            var chart_width = 800;
+            var chart_height = 210;
+            var bar_padding = 5;
+
+      // create SVG ELement
+           var svg3 =  d3.select('#chart3')
+            .append('svg')
+            .attr("width", chart_width)
+            .attr("height", chart_height);
+           
+      // Bind DAta and create bars
+            svg3.selectAll('rect')
+            .data(data3)
+            .enter()
+            .append('rect')
+            .attr('x',(d,i) => {
+             return (i* (chart_width/ data3.length)); // 0,30,60
+            })
+            .attr('y', (d)=>{
+                return chart_height - d*3;
+            })
+            .attr('width', chart_width / data3.length - bar_padding)
+            .attr('height', (d)=>{
+                return d*3;
+            })
+            .attr("fill","#77eedd");
+
+      // Create Labels
+            svg3.selectAll('text')
+            .data(data3)
+            .enter()
+            .append('text')
+            .text((d)=>{
+                return d;
+            })
+            .attr('x',(d,i) => {
+             return i* (chart_width/ data3.length) +
+                        (chart_width / data3.length - bar_padding)/2; // 0,30,60
+            })
+            .attr('y', (d)=>{
+                return chart_height - d*3 + 15;
+            })
+            .attr('font-size', 14)
+            .attr('fill', "#fff")
+            .attr('text-anchor','middle');
+        </script>
+
+        <!------------------chart 4 ordinal data---------------------------------->
+        <div id = "chart4" class="chart"></div>
+        <hr>
+        <button type="button" style="margin-left:50%">Update</button>
+
+        <script>
+       //creating random data
+            var data4=[];
+            function createdata(n) {
+                data4=[]
+                for( var i=0; i<n; i++){
+                    //var num = Math.floor(Math.random() * 50);
+                    var num = Math.floor(d3.randomUniform(1,50)());
+                    data4.push(num);
+                }
+            }
+
+            createdata(20);
+
+            var chart_width = 800;
+            var chart_height = 210;
+            var bar_padding = 5;
+
+      // create SVG ELement
+           var svg4 =  d3.select('#chart4')
+            .append('svg')
+            .attr("width", chart_width)
+            .attr("height", chart_height);
+
+      // create scales
+             var x_scale = d3.scaleBand()
+             .domain(d3.range(data4.length))
+             .rangeRound([0, chart_width]) // 0 - 800/15*0, 1 - 800/15*1                 
+             .paddingInner(0.05);
+
+             var y_scale = d3.scaleLinear()
+             .domain([0,d3.max(data4)])
+             .range([0,chart_height]);
+
+      // Bind DAta and create bars
+            svg4.selectAll('rect')
+            .data(data4)
+            .enter()
+            .append('rect')
+            .attr('x',(d,i) => {
+             return x_scale(i); // 0,30,60
+            })
+            .attr('y', (d)=>{
+                return chart_height - y_scale(d);
+            })
+            .attr('width', x_scale.bandwidth())
+            .attr('height', (d)=>{
+                return y_scale(d);
+            })
+            .attr("fill","#77eedd");
+
+      // Create Labels
+            svg4.selectAll('text')
+            .data(data4)
+            .enter()
+            .append('text')
+            .text((d)=>{
+                return d;
+            })
+            .attr('x',(d,i) => {
+             return x_scale(i) + x_scale.bandwidth()/2; // 0,30,60
+            })
+            .attr('y', (d)=>{
+                return chart_height - y_scale(d) + 15;
+            })
+            .attr('font-size', 14)
+            .attr('fill', "#fff")
+            .attr('text-anchor','middle');
+    
+      //events
+            d3.select('button').on('click', () => {
+                createdata(20);
+                console.log(data4)
+                //data4[0] = 60;
+            //updating domains
+                y_scale.domain([0,d3.max(data4)]);
+            
+            //updating rects
+                svg4.selectAll('rect')
+                .data(data4)
+                .transition()
+                .delay((d,i)=>{
+                    return i/data4.length*1000;
+                })
+                .duration(1000)
+                .ease( d3.easeElasticOut )
+                .attr('y', (d)=>{
+                    return chart_height - y_scale(d);
+                })
+                .attr('height', (d)=>{
+                    return y_scale(d);
+                });
+
+            //updating texts
+                svg4.selectAll('text')
+                .data(data4)
+                .transition()                
+                .delay((d,i)=>{
+                    return i/data4.length*1000;
+                })
+                .duration(1000)
+                .text((d)=>{
+                    return d;
+                })
+                .attr('x',(d,i) => {
+                     return x_scale(i) + x_scale.bandwidth()/2; // 0,30,60
+                })
+                .attr('y', (d)=>{
+                    return chart_height - y_scale(d) + 15;
+                })
+            })
+        </script>
+
+        
+    </body>
+</html>
